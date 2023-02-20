@@ -18,6 +18,8 @@ let activeColor = "255,255,255,255"
 let oImage : HTMLImageElement | null = null;
 let tempImageData : Uint8ClampedArray | null = null;
 
+let outputFilename : string = 'untitled';
+
 const SQRT255 = Math.sqrt(255 * 255 * 3)
 
 const Printing = () => {
@@ -171,6 +173,7 @@ const Printing = () => {
     // console.log(props);
     const file = props.file;
     // console.log(file);
+    outputFilename = "自定义"+file.name
 
     const canvasElement = document.getElementById("canvas") as HTMLCanvasElement;
 
@@ -515,7 +518,7 @@ const Printing = () => {
 
       const a = document.createElement('a')
       a.href = url
-      a.download = `untitled.png`
+      a.download = outputFilename
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)

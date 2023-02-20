@@ -37,6 +37,18 @@ app.whenReady().then(() => {
     // 打开的窗口，那么程序会重新创建一个窗口。
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+
+
+  const { session } = require('electron')
+  session.defaultSession.on('will-download', (event, item, webContents) => {
+    item.setSaveDialogOptions({
+      filters: [
+        {name: "PNG Image", extensions: ["png"]}
+      ],
+      message: "选择你要保存的目录"
+    })
+  })
+
 });
 
 // 除了 macOS 外，当所有窗口都被关闭的时候退出程序。 因此，通常对程序和它们在
