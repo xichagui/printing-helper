@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react'
 import './App.css'
 
 import {readPsd} from 'ag-psd';
-import {fabric} from 'fabric';
+// import {fabric} from 'fabric';
 import {ColorResult, RGBColor, SketchPicker} from 'react-color'
 import {Button, Layout, Upload} from "antd";
 import {UndoOutlined} from "@ant-design/icons";
@@ -62,47 +62,47 @@ const Printing = () => {
     }
   }
 
-  function canvasAddToFabric(fabCanvas: any, canvas: any) {
-    if (canvas?.children) {
-      canvas.children.map((c: any) => {
-        if (!c.hidden) {
-          if (c.canvas) {
-            // ctx.drawImage(c.canvas, c.left, c.top)
-            fabCanvas.add(new fabric.Image(canvas));
-          } else if (c.children) {
-            canvasAddToFabric(fabCanvas, c);
-          }
-        }
-      })
-    }
-  }
+  // function canvasAddToFabric(fabCanvas: any, canvas: any) {
+  //   if (canvas?.children) {
+  //     canvas.children.map((c: any) => {
+  //       if (!c.hidden) {
+  //         if (c.canvas) {
+  //           // ctx.drawImage(c.canvas, c.left, c.top)
+  //           fabCanvas.add(new fabric.Image(canvas));
+  //         } else if (c.children) {
+  //           canvasAddToFabric(fabCanvas, c);
+  //         }
+  //       }
+  //     })
+  //   }
+  // }
 
-  const upload = (props: any) => {
-    // console.log(props);
-    const file = props.target.files[0];
-    // console.log(file);
-
-    if (window.FileReader) {
-      const reader = new FileReader();
-      reader.readAsArrayBuffer(file);
-      reader.onloadend = (e) => {
-        const buffer = e.target?.result as ArrayBuffer;
-        const psd = readPsd(buffer);
-        console.log(psd);
-
-        const ctx = appContext.canvas.getContext();
-
-        psdAddToCanvas(ctx, psd)
-        canvasAddToFabric(appContext.canvas, psd)
-
-        appContext.canvas.add(psd.canvas)
-        const canvas = appContext.canvas as fabric.Canvas;
-        // if (psd.canvas) {
-        //   canvas.add(new fabric.Canvas(psd.canvas))
-        // }
-      }
-    }
-  }
+  // const upload = (props: any) => {
+  //   // console.log(props);
+  //   const file = props.target.files[0];
+  //   // console.log(file);
+  //
+  //   if (window.FileReader) {
+  //     const reader = new FileReader();
+  //     reader.readAsArrayBuffer(file);
+  //     reader.onloadend = (e) => {
+  //       const buffer = e.target?.result as ArrayBuffer;
+  //       const psd = readPsd(buffer);
+  //       console.log(psd);
+  //
+  //       const ctx = appContext.canvas.getContext();
+  //
+  //       psdAddToCanvas(ctx, psd)
+  //       canvasAddToFabric(appContext.canvas, psd)
+  //
+  //       appContext.canvas.add(psd.canvas)
+  //       const canvas = appContext.canvas as fabric.Canvas;
+  //       // if (psd.canvas) {
+  //       //   canvas.add(new fabric.Canvas(psd.canvas))
+  //       // }
+  //     }
+  //   }
+  // }
 
   function isNearColor(thisColor: RGBColor, color: RGBColor) {
     const r1 = thisColor.r, g1 = thisColor.g, b1 = thisColor.b
