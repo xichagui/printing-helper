@@ -27,7 +27,6 @@ const Printing = () => {
   // let ac = convert.rgb.cmyk(255,0,0)
   // console.log(ac)
   // console.log(convert.cmyk.rgb(ac))
-  const [count, setCount] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasRef2 = useRef<HTMLCanvasElement>(null);
 
@@ -216,6 +215,8 @@ const Printing = () => {
           activeColor = Object.keys(thisColorGroup)[0]
 
           setColor1(thisColorGroup[activeColor])
+
+          copyToCanvas2()
         }
       }
     }
@@ -226,6 +227,7 @@ const Printing = () => {
       const ctx = canvasRef.current!.getContext("2d");
       ctx!.imageSmoothingEnabled = false
       ctx!.clearRect(0, 0, oImage.width, oImage.height)
+      copyToCanvas2()
       ctx!.drawImage(oImage!, 0, 0);
 
       const posCount: number = oImage.width * oImage.height
@@ -248,6 +250,7 @@ const Printing = () => {
       activeColor = Object.keys(thisColorGroup)[0]
 
       setColor1(thisColorGroup[activeColor])
+      copyToCanvas2()
     }
 
   }
@@ -405,6 +408,7 @@ const Printing = () => {
     }
 
     canvas!.getContext('2d')!.putImageData(imageData, 0, 0);
+    copyToCanvas2()
   }
 
   // 卷积计算
@@ -433,6 +437,7 @@ const Printing = () => {
 
       }
     }
+    copyToCanvas2()
     // return output;
   }
 
@@ -455,6 +460,7 @@ const Printing = () => {
 
     canvas!.getContext('2d')!.putImageData(imageData, 0, 0);
     // console.log(imageData)
+    copyToCanvas2()
   }
 
   const bianyuan = () => {
@@ -475,6 +481,7 @@ const Printing = () => {
 
     canvas!.getContext('2d')!.putImageData(imageData, 0, 0);
     // console.log(imageData)
+    copyToCanvas2()
   }
 
   useEffect(() => {
@@ -536,7 +543,7 @@ const Printing = () => {
 
       const a = document.createElement('a')
       a.href = url
-      a.download = `untitled.png`
+      a.download = outputFilename
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
@@ -670,6 +677,18 @@ const Printing = () => {
 
   }
 
+  const copyToCanvas2 = () => {
+    const canvas2 = canvasRef2.current!.getContext('2d')
+    canvas2!.imageSmoothingEnabled = false
+    const canvas = canvasRef.current
+    const width = canvas!.width, height = canvas!.height
+
+    const scale = width / 700
+    // let canvas = canvasRef!.current!.getContext('2d')
+    canvas2!.drawImage(canvasRef.current!, 0, 0, 700, 700)
+    console.log("copyToCanvas2")
+  }
+
   return (
     <Layout>
       <Header>
@@ -708,8 +727,8 @@ const Printing = () => {
             {/*<input id="canvas" type="file" onChange={uploadPrinting}/>*/}
 
             {/*<button onClick={showColor}>showColor</button>*/}
-            <canvas id={"canvas"} ref={canvasRef}/>
-            <canvas id={"canvas2"} ref={canvasRef2}/>
+            <canvas id={"canvas"} ref={canvasRef} style={{display: "none"}}/>
+            <canvas id={"canvas2"} ref={canvasRef2} width={700} height={700}/>
             {/*style={{display: "None"}}*/}
           </div>
         </Layout>
