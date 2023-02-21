@@ -3,7 +3,13 @@
   margin: 0 auto;
   /*padding: 2rem;*/
   text-align: center;
-  height: 1000px;
+  height: 100%;
+  /*height: 1000px;*/
+
+}
+
+html, body, .app {
+    height: 100%
 }
 
 .logo {

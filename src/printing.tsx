@@ -22,6 +22,11 @@ let outputFilename : string = 'untitled';
 
 const SQRT255 = Math.sqrt(255 * 255 * 3)
 
+let canvas2Size = 500
+let canvas3Size = 800
+
+
+
 const Printing = () => {
 
   // let ac = convert.rgb.cmyk(255,0,0)
@@ -29,21 +34,38 @@ const Printing = () => {
   // console.log(convert.cmyk.rgb(ac))
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasRef2 = useRef<HTMLCanvasElement>(null);
+  const canvasRef3 = useRef<HTMLCanvasElement>(null);
+
 
   const [color1, setColor1] = useState<ColorResult["rgb"]>({r: 51, g: 100, b: 51, a: 1})
   const [colorGroup, setColorGroup] = useState<{ [key: string]: ColorResult["rgb"] }>({})
+
+  const resizeCanvas2 = () => {
+    const minWH =  document.body.offsetWidth < document.body.offsetHeight ? document.body.offsetWidth : document.body.offsetHeight;
+
+    if (canvasRef2.current) {
+      console.log(canvasRef2)
+      canvas2Size = Math.floor((minWH - 100) / 10) * 10
+      canvasRef2.current!.height = canvas2Size;
+      canvasRef2.current!.width = canvas2Size;
+
+      copyToCanvas2()
+    }
+  }
 
   useEffect(() => {
     const options = {"width": 1280, "height": 720}
     // const canvas = new fabric.Canvas(canvasRef.current, options)
     const canvas = canvasRef.current
     appContext.canvas = canvasRef.current;
+    window.addEventListener('resize', resizeCanvas2)
 
     return () => {
       if (canvas) {
         // canvas.dispose();
         delete appContext.canvas;
       }
+      window.removeEventListener('resize', resizeCanvas2)
       // colorDict = {}
     }
   })
@@ -678,15 +700,31 @@ const Printing = () => {
   }
 
   const copyToCanvas2 = () => {
-    const canvas2 = canvasRef2.current!.getContext('2d')
-    canvas2!.imageSmoothingEnabled = false
-    const canvas = canvasRef.current
-    const width = canvas!.width, height = canvas!.height
+    if (canvasRef2.current) {
+      const canvas2 = canvasRef2.current.getContext('2d')
+      canvas2!.imageSmoothingEnabled = false
+      const canvas = canvasRef.current
+      const width = canvas!.width, height = canvas!.height
 
-    const scale = width / 700
-    // let canvas = canvasRef!.current!.getContext('2d')
-    canvas2!.drawImage(canvasRef.current!, 0, 0, 700, 700)
-    console.log("copyToCanvas2")
+      // let canvas = canvasRef!.current!.getContext('2d')
+      canvas2!.drawImage(canvasRef.current!, 0, 0, canvas2Size, canvas2Size)
+      console.log("copyToCanvas2")
+    }
+  }
+
+  const drawToCanvas3 = (printing: HTMLCanvasElement | null, clear:boolean, dx: number, dy: number, dw: number, dh: number, px: number, py: number) => {
+    if (canvasRef3.current && printing) {
+      const canvas3 = canvasRef3.current.getContext('2d')
+      if (clear) {
+        canvas3!.clearRect(0,0,1000,1000)
+      }
+      for (let i = dx; i < 1000; i+=(dw+px) ) {
+        for (let j = dy; j < 1000; j+=(dh+py)) {
+          canvas3!.drawImage(printing, i, j, dw, dh)
+          console.log(i,j)
+        }
+      }
+    }
   }
 
   return (
@@ -699,8 +737,8 @@ const Printing = () => {
         </Upload>
         <Button style={{marginLeft: 50}} icon={<UndoOutlined />} onClick={rePrintImage}>复原印花</Button>
         <Button style={{marginLeft: 20}} onClick={save}>保存</Button>
-
-
+        <Button style={{marginLeft: 20}} onClick={()=>{drawToCanvas3(canvasRef.current, true,-50,-50,100,100,100,100)}}>平铺</Button>
+        <Button style={{marginLeft: 20}} onClick={()=>{drawToCanvas3(canvasRef.current, false,50,50,100,100,100,100)}}>平铺</Button>
         {/*<Button style={{marginLeft: 50}} onClick={save2}>保存2</Button>*/}
       </Header>
       <Layout>
@@ -728,7 +766,8 @@ const Printing = () => {
 
             {/*<button onClick={showColor}>showColor</button>*/}
             <canvas id={"canvas"} ref={canvasRef} style={{display: "none"}}/>
-            <canvas id={"canvas2"} ref={canvasRef2} width={700} height={700}/>
+            {/*<canvas id={"canvas2"} ref={canvasRef2} width={canvas2Size} height={canvas2Size}/>*/}
+            <canvas id={"canvas3"} ref={canvasRef3} width={1000} height={1000} style={{border: "1px #000 solid"}}/>
             {/*style={{display: "None"}}*/}
           </div>
         </Layout>
