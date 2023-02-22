@@ -50,6 +50,7 @@ const Printing = () => {
   }
 
   useEffect(() => {
+    document.title = '印花排版软件';
     const options = {"width": 1280, "height": 720}
     // const canvas = new fabric.Canvas(canvasRef.current, options)
     const canvas = canvasRef.current

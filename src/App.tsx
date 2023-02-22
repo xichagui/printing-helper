@@ -4,10 +4,12 @@ import {readPsd} from 'ag-psd';
 // import {fabric} from 'fabric';
 import {ColorResult, RGBColor, SketchPicker} from 'react-color'
 import Printing from "./printing";
+import Pattern from './pattern';
 
 function App() {
   return (
-      <Printing/>
+      // <Printing/>
+    <Pattern/>
     )
 }
 
