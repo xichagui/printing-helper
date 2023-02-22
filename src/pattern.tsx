@@ -35,14 +35,11 @@ const Printing = () => {
   const canvasRef3 = useRef<HTMLCanvasElement>(null);
 
 
-  const [color1, setColor1] = useState<ColorResult["rgb"]>({r: 51, g: 100, b: 51, a: 1})
-  const [colorGroup, setColorGroup] = useState<{ [key: string]: ColorResult["rgb"] }>({})
-
   const resizeCanvas2 = () => {
     const minWH =  document.body.offsetWidth < document.body.offsetHeight ? document.body.offsetWidth : document.body.offsetHeight;
     if (canvasRef2.current) {
       // console.log(canvasRef2)
-      canvas2Size = Math.floor((minWH - 109) / 10) * 10
+      canvas2Size = Math.floor((minWH - 100) / 10) * 10
       canvasRef2.current!.height = canvas2Size;
       canvasRef2.current!.width = canvas2Size;
       copyToCanvas2()
@@ -54,7 +51,6 @@ const Printing = () => {
     // const canvas = new fabric.Canvas(canvasRef.current, options)
     const canvas = canvasRef.current
     appContext.canvas = canvasRef.current;
-    resizeCanvas2();
     window.addEventListener('resize', resizeCanvas2)
 
     return () => {
@@ -164,23 +160,11 @@ const Printing = () => {
           ctx!.drawImage(img, 0, 0);
 
           // saveImageDate()
-          saveImageDate2()
           // saveImageDate3()
-
           // console.log(colorDict)
-
-          const thisColorGroup: { [key: string]: ColorResult["rgb"] } = {}
-          createColorGroup(thisColorGroup, posCount)
           // createColorGroup2(thisColorGroup, posCount)
           // createColorGroup3(thisColorGroup, posCount)
 
-          setColorGroup(() => {
-            return thisColorGroup
-          })
-
-          activeColor = Object.keys(thisColorGroup)[0]
-
-          setColor1(thisColorGroup[activeColor])
         }
       }
     }
@@ -219,22 +203,6 @@ const Printing = () => {
           // saveImageDate()
           saveImageDate2()
           // saveImageDate3()
-
-          // console.log(colorDict)
-
-          const thisColorGroup: { [key: string]: ColorResult["rgb"] } = {}
-          // createColorGroup(thisColorGroup, posCount)
-          createColorGroup2(thisColorGroup, posCount)
-          // createColorGroup3(thisColorGroup, posCount)
-
-          setColorGroup(() => {
-            return thisColorGroup
-          })
-
-          activeColor = Object.keys(thisColorGroup)[0]
-
-          setColor1(thisColorGroup[activeColor])
-
           copyToCanvas2()
         }
       }
@@ -255,20 +223,7 @@ const Printing = () => {
       saveImageDate2()
       // saveImageDate3()
 
-      // console.log(colorDict)
 
-      const thisColorGroup: { [key: string]: ColorResult["rgb"] } = {}
-      // createColorGroup(thisColorGroup, posCount)
-      createColorGroup2(thisColorGroup, posCount)
-      // createColorGroup3(thisColorGroup, posCount)
-
-      setColorGroup(() => {
-        return thisColorGroup
-      })
-
-      activeColor = Object.keys(thisColorGroup)[0]
-
-      setColor1(thisColorGroup[activeColor])
       copyToCanvas2()
     }
 
@@ -399,143 +354,6 @@ const Printing = () => {
     }
   }
 
-  const colorChange = (color: ColorResult["rgb"], colorDictKey: string) => {
-    const canvas = canvasRef.current
-    const width = canvas!.width, height = canvas!.height
-    // console.log(width, height)
-
-    const imageData = canvas!.getContext('2d')!.getImageData(0, 0, width, height)
-    const data = imageData.data;
-
-    // setColorGroup({...colorGroup, colorString: color})
-
-    // console.log("colorchangeFun", colorDict)
-
-    if (Object.keys(colorDict).length > 0) {
-      // console.log(colorGroup[colorDictKey])
-      let tempColorGroup = {...colorGroup}
-      tempColorGroup[colorDictKey] = color
-      setColorGroup(tempColorGroup)
-
-      for (let i = 0; i < colorDict[colorDictKey].length; i++) {
-        const posX = colorDict[colorDictKey][i]
-        data[posX] = color.r;
-        data[posX + 1] = color.g;
-        data[posX + 2] = color.b;
-        data[posX + 3] = 255;
-      }
-    }
-
-    canvas!.getContext('2d')!.putImageData(imageData, 0, 0);
-    copyToCanvas2()
-  }
-
-  // 卷积计算
-  const convolutionMatrix = (input: ImageData, kernel: any) => {
-    let w = input.width, h = input.height;
-    let oldDate = input.data.map(e=>e)
-    let iD = input.data
-    for (let y = 1; y < h - 1; y += 1) {
-      for (let x = 1; x < w - 1; x += 1) {
-        for (let c = 0; c < 3; c += 1) {
-          let i = (y * w + x) * 4 + c;
-          // console.log(i)
-          iD[i] = kernel[0] * oldDate[i - w * 4 - 4] +
-            kernel[1] * oldDate[i - w * 4] +
-            kernel[2] * oldDate[i - w * 4 + 4] +
-            kernel[3] * oldDate[i - 4] +
-            kernel[4] * oldDate[i] +
-            kernel[5] * oldDate[i + 4] +
-            kernel[6] * oldDate[i + w * 4 - 4] +
-            kernel[7] * oldDate[i + w * 4] +
-            kernel[8] * oldDate[i + w * 4 + 4]
-        }
-        if (kernel == kernel2) {
-          iD[(y * w + x) * 4 + 3] = 255;
-        }
-
-      }
-    }
-    copyToCanvas2()
-    // return output;
-  }
-
-  const kernel = [-1, -1, -1, -1, 9, -1, -1, -1, -1]; // 锐化卷积核
-  const kernel2 = [-1, -1, -1, -1, 8, -1, -1, -1, -1]; // 边缘检测
-  const kernel3 = [0,0,0,0,1,0,0,0,0]; // 边缘检测
-
-  const ruihua = () => {
-    // let output = new ImageData()
-    // convolutionMatrix()
-
-    const canvas = canvasRef.current
-    const width = canvas!.width, height = canvas!.height
-    // console.log(width, height)
-
-    const imageData = canvas!.getContext('2d')!.getImageData(0, 0, width, height)
-    // setColorGroup({...colorGroup, colorString: color})
-    // console.log("colorchangeFun", colorDict)
-    convolutionMatrix(imageData, kernel)
-
-    canvas!.getContext('2d')!.putImageData(imageData, 0, 0);
-    // console.log(imageData)
-    copyToCanvas2()
-  }
-
-  const bianyuan = () => {
-    // let output = new ImageData()
-    // convolutionMatrix()
-
-    const canvas = canvasRef.current
-    const width = canvas!.width, height = canvas!.height
-    // console.log(width, height)
-
-    const imageData = canvas!.getContext('2d')!.getImageData(0, 0, width, height)
-
-    // setColorGroup({...colorGroup, colorString: color})
-
-    // console.log("colorchangeFun", colorDict)
-
-    convolutionMatrix(imageData, kernel2)
-
-    canvas!.getContext('2d')!.putImageData(imageData, 0, 0);
-    // console.log(imageData)
-    copyToCanvas2()
-  }
-
-  useEffect(() => {
-    // console.log('colorGroupEf', colorGroup)
-  }, [colorGroup]);
-
-  useEffect(() => {
-    colorChange(color1, activeColor)
-  }, [color1]);
-
-
-  const showColor = () => {
-
-  }
-
-
-  const selectColor = (color: ColorResult["rgb"], colorString: string) => {
-    // colorGroup[colorString] = color
-    // setColorGroup({...colorGroup, colorString: color})
-
-    activeColor = colorString
-    setColor1(color)
-  }
-
-  const resetColor = (colorString: string) => {
-    // activeColor = colorString
-    const colorStringList = colorString.split(",")
-    const color = {r: parseInt(colorStringList[0]),g: parseInt(colorStringList[1]),b: parseInt(colorStringList[2]), a:255}
-    // let tempColorGroup = {...colorGroup}
-    // tempColorGroup[colorString] = color
-    // setColorGroup(tempColorGroup)
-    selectColor(color, colorString)
-    // console.log(colorString,1111)
-  }
-
   const save = () => {
     // const ctx = canvasRef.current!.getContext("2d");
 
@@ -567,109 +385,6 @@ const Printing = () => {
       a.click()
       document.body.removeChild(a)
     }
-  }
-
-  const redFilter = () => {
-    const canvas = canvasRef.current
-    const width = canvas!.width, height = canvas!.height
-
-    if (tempImageData) {
-      removeFilter();
-    }
-
-    const imageData = canvas!.getContext('2d')!.getImageData(0, 0, width, height)
-    const data = imageData.data;
-
-    tempImageData = imageData.data.map(e=>e);
-
-    for (let key in colorDict) {
-      for (let i = 0; i < colorDict[key].length; i++) {
-        const posX = colorDict[key][i]
-        data[posX + 1] = 0;
-        data[posX + 2] = 0;
-        data[posX + 3] = 255;
-      }
-    }
-
-    canvas!.getContext('2d')!.putImageData(imageData, 0, 0);
-  }
-
-  const greenFilter = () => {
-    const canvas = canvasRef.current
-    const width = canvas!.width, height = canvas!.height
-
-    if (tempImageData) {
-      removeFilter();
-    }
-
-    const imageData = canvas!.getContext('2d')!.getImageData(0, 0, width, height)
-    const data = imageData.data;
-
-    tempImageData = imageData.data.map(e=>e);
-
-    for (let key in colorDict) {
-      for (let i = 0; i < colorDict[key].length; i++) {
-        const posX = colorDict[key][i]
-        data[posX] = 0;
-        data[posX + 2] = 0;
-        data[posX + 3] = 255;
-      }
-    }
-
-    canvas!.getContext('2d')!.putImageData(imageData, 0, 0);
-  }
-
-  const blueFilter = () => {
-    const canvas = canvasRef.current
-    const width = canvas!.width, height = canvas!.height
-
-    if (tempImageData) {
-      removeFilter();
-    }
-
-    const imageData = canvas!.getContext('2d')!.getImageData(0, 0, width, height)
-    const data = imageData.data;
-
-    tempImageData = imageData.data.map(e=>e);
-
-    for (let key in colorDict) {
-      for (let i = 0; i < colorDict[key].length; i++) {
-        const posX = colorDict[key][i]
-        data[posX] = 0;
-        data[posX + 1] = 0;
-        data[posX + 3] = 255;
-      }
-    }
-
-    canvas!.getContext('2d')!.putImageData(imageData, 0, 0);
-  }
-
-    const garyFilter = () => {
-    const canvas = canvasRef.current
-    const width = canvas!.width, height = canvas!.height
-
-    if (tempImageData) {
-      removeFilter();
-    }
-
-    const imageData = canvas!.getContext('2d')!.getImageData(0, 0, width, height)
-    const data = imageData.data;
-
-    tempImageData = imageData.data.map(e=>e);
-
-
-    for (let key in colorDict) {
-      for (let i = 0; i < colorDict[key].length; i++) {
-        const posX = colorDict[key][i]
-        let newColor = Math.round((data[posX] + data[posX+1] + data[posX+2]) / 3);
-        data[posX] = newColor;
-        data[posX + 1] = newColor;
-        data[posX + 2] = newColor;
-        data[posX + 3] = 255;
-      }
-    }
-
-    canvas!.getContext('2d')!.putImageData(imageData, 0, 0);
   }
 
   const removeFilter = () => {
@@ -709,21 +424,21 @@ const Printing = () => {
     }
   }
 
-  // const drawToCanvas3 = (printing: HTMLCanvasElement | null, clear:boolean, dx: number, dy: number, dw: number, dh: number, px: number, py: number) => {
-  //   if (canvasRef3.current && printing) {
-  //     const canvas3 = canvasRef3.current.getContext('2d')
-  //     if (clear) {
-  //       canvas3!.clearRect(0,0,1000,1000)
-  //     }
-  //     for (let i = dx; i < 1000; i+=(dw+px) ) {
-  //       for (let j = dy; j < 1000; j+=(dh+py)) {
-  //         canvas3!.drawImage(printing, i, j, dw, dh)
-  //         console.log(i,j)
-  //
-  //       }
-  //     }
-  //   }
-  // }
+  const drawToCanvas3 = (printing: HTMLCanvasElement | null, clear:boolean, dx: number, dy: number, dw: number, dh: number, px: number, py: number) => {
+    if (canvasRef3.current && printing) {
+      const canvas3 = canvasRef3.current.getContext('2d')
+      if (clear) {
+        canvas3!.clearRect(0,0,1000,1000)
+      }
+      for (let i = dx; i < 1000; i+=(dw+px) ) {
+        for (let j = dy; j < 1000; j+=(dh+py)) {
+          canvas3!.drawImage(printing, i, j, dw, dh)
+          console.log(i,j)
+
+        }
+      }
+    }
+  }
 
   return (
     <Layout>
@@ -735,28 +450,22 @@ const Printing = () => {
         </Upload>
         <Button style={{marginLeft: 50}} icon={<UndoOutlined />} onClick={rePrintImage}>复原印花</Button>
         <Button style={{marginLeft: 20}} onClick={save}>保存</Button>
-        {/*<Button style={{marginLeft: 20}} onClick={()=>{drawToCanvas3(canvasRef.current, true,-50,-50,100,100,100,100)}}>平铺</Button>*/}
-        {/*<Button style={{marginLeft: 20}} onClick={()=>{drawToCanvas3(canvasRef.current, false,25,25,150,150,50,50)}}>平铺</Button>*/}
+        <Button style={{marginLeft: 20}} onClick={()=>{drawToCanvas3(canvasRef.current, true,-50,-50,100,100,100,100)}}>平铺</Button>
+        <Button style={{marginLeft: 20}} onClick={()=>{drawToCanvas3(canvasRef.current, false,25,25,150,150,50,50)}}>平铺</Button>
         {/*<Button style={{marginLeft: 50}} onClick={save2}>保存2</Button>*/}
       </Header>
       <Layout>
         <Sider trigger={null} width={220}>
-          <SketchPicker color={color1} onChange={(color) => {
-            setColor1(color.rgb)
-          }}/>
+          {/*<SketchPicker color={color1} onChange={(color) => {*/}
+          {/*  setColor1(color.rgb)*/}
+          {/*}}/>*/}
           <div>
-            <ColorDiv colorGroup={colorGroup} selectColor={selectColor} resetColor={resetColor}/>
+            {/*<ColorDiv colorGroup={colorGroup} selectColor={selectColor} resetColor={resetColor}/>*/}
           </div>
         </Sider>
-        <Layout style={{border: "5px #888888 solid", minHeight: 500, overflow: "auto", backgroundColor: "white"}}>
+        <Layout style={{border: "5px #888888 solid", minHeight: 800, overflow: "auto", backgroundColor: "white"}}>
           <Header style={{background: "#BEBEAB", height: "38px", lineHeight: "38px", textAlign: "left"}}>
-            <Button onClick={redFilter}>红色滤镜</Button>
-            <Button style={{marginLeft: 20}} onClick={greenFilter}>绿色滤镜</Button>
-            <Button style={{marginLeft: 20}} onClick={blueFilter}>蓝色滤镜</Button>
-            <Button style={{marginLeft: 20}} onClick={garyFilter}>灰色滤镜</Button>
             <Button style={{marginLeft: 20}} onClick={removeFilter}>去除滤镜</Button>
-            <Button style={{marginLeft: 20}} onClick={ruihua}>锐化</Button>
-            <Button style={{marginLeft: 20}} onClick={bianyuan}>边缘检测</Button>
           </Header>
           <div className="App">
             {/*<input type="file" onChange={upload}/>*/}
@@ -764,8 +473,8 @@ const Printing = () => {
 
             {/*<button onClick={showColor}>showColor</button>*/}
             <canvas id={"canvas"} ref={canvasRef} style={{display: "none"}}/>
-            <canvas id={"canvas2"} ref={canvasRef2} width={canvas2Size} height={canvas2Size}/>
-            {/*<canvas id={"canvas3"} ref={canvasRef3} width={1000} height={1000} style={{border: "1px #000 solid"}}/>*/}
+            {/*<canvas id={"canvas2"} ref={canvasRef2} width={canvas2Size} height={canvas2Size}/>*/}
+            <canvas id={"canvas3"} ref={canvasRef3} width={1000} height={1000} style={{border: "1px #000 solid"}}/>
             {/*style={{display: "None"}}*/}
           </div>
         </Layout>
@@ -774,45 +483,6 @@ const Printing = () => {
 
     </Layout>
   )
-}
-
-const ColorDiv = (props: any) => {
-  // console.log(props)
-  // const a = [1,1,2]
-  // console.log(props.colorGroup)
-  //
-  const colorStyle = {
-    width: '50px',
-    height: '20px',
-    borderRadius: '2px',
-
-  }
-
-  const swatchStyle = {
-    padding: '5px',
-    background: '#fff',
-    borderRadius: '3px',
-    boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
-    cursor: 'pointer',
-  }
-
-  return <div>
-    {Object.keys(props.colorGroup).map((value, index) => {
-      return <div key={index} style={{width: 90, height: 32, margin: "6px", float: "left", display: "flex"}}>
-        <div style={swatchStyle}>
-          <div style={{
-            ...colorStyle,
-            background: `rgba(${props.colorGroup[value].r}, ${props.colorGroup[value].g},${props.colorGroup[value].b},${props.colorGroup[value].a})`
-          }}
-               onClick={() => {
-                 props.selectColor(props.colorGroup[value], value)
-               }}/>
-
-        </div>
-        <Button icon={<UndoOutlined />} onClick={()=>{props.resetColor(value)}}/>
-      </div>
-    })}
-  </div>
 }
 
 
