@@ -356,8 +356,13 @@ const Printing = () => {
       let op = printingOptionsList[i]
       drawToCanvas3(printingList[i], i==0, op.dx, op.dy, op.dw, op.dh, op.px, op.py, op.angle, op.verticalFlip, op.horizontalFlip)
     }
-    let op0 = printingOptionsList[0]
-    setCanvas1(op0.dw + op0.px, op0.dh + op0.py)
+
+    let maxW = 0, maxH = 0;
+    for (let i = 0; i < printingList.length; i++) {
+      maxW = Math.max(maxW, printingOptionsList[i].dw + printingOptionsList[i].px)
+      maxH = Math.max(maxW, printingOptionsList[i].dh + printingOptionsList[i].py)
+    }
+    setCanvas1(maxW, maxH)
 
     for (let i = 0; i < printingList.length; i++) {
       let op = printingOptionsList[i]
@@ -528,7 +533,7 @@ const Printing = () => {
           <div className="App">
             {/*<input type="file" onChange={upload}/>*/}
             {/*<input id="canvas" type="file" onChange={uploadPrinting}/>*/}
-            {/*<button onClick={showColor}>showColor</button >*/}
+            {/*<button onClick={showColor}>showColor</button>*/}
             <canvas id={"canvas"} ref={canvasRef1} style={{display: "none"}}/>
             {/*<canvas id={"canvas2"} ref={canvasRef2} width={canvas2Size} height={canvas2Size}/>*/}
             <canvas id={"canvas3"} ref={canvasRef3} width={1000} height={1000} style={{border: "1px #000 solid"}}/>
