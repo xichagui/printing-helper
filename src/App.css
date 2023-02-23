@@ -57,19 +57,30 @@ html, body, .app {
     /*width: 216px;*/
     text-align: center;
     background-color: #FFF;
-    border-left: 2px #000 solid;
-    border-right: 2px #000 solid;
-    border-bottom: 2px #000 solid;
-    height: 150px;
+    border: 2px black solid;
+    /*margin-bottom: 0px;*/
+    height: 152px;
 }
 
 #printing-list > div > img {
     width: 150px;
     height: 150px;
     object-fit: contain;
-    border: 1px #000 solid;
+    /*border: 1px #000 solid;*/
 }
 
 #printing-list > div > canvas {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    /*border: 2px #000 solid;*/
 }
 
+#printing-list > div.active {
+    border: 2px red solid;
+}
+
+/*#printing-list > div.active > div canvas {*/
+/*    width: 148px;*/
+/*    height: 148px;*/
+/*}*/
